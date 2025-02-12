@@ -15,6 +15,7 @@ import com.side.daangn.service.service.product.CategoryService;
 import com.side.daangn.service.service.product.ProductService;
 import com.side.daangn.service.service.product.SearchService;
 import com.side.daangn.service.service.user.UserService;
+import com.side.daangn.util.RedisUtil;
 import com.side.daangn.util.UserUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,9 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private final SearchService searchService;
 
+    @Autowired
+    private final RedisUtil redisUtil;
+
     @Override
     public SearchPageDTO products_search(SearchOptionDTO dto) {
         try {
@@ -53,13 +57,16 @@ public class ProductServiceImpl implements ProductService {
 
             if(dto.getSearch() != null&& !dto.getSearch().isEmpty()){
                 System.out.println("Search null check");
-                if(searchService.findBySearch(dto.getSearch())!= null){
-                    searchService.searchPlus(dto.getSearch());
+                if(redisUtil.getToken("search_"+dto.getSearch()) != null){
+//                  searchService.searchPlus(dto.getSearch());
+                    int count = Integer.parseInt(redisUtil.getToken("search_"+dto.getSearch()));
+                    redisUtil.saveToken("search_"+dto.getSearch(), String.valueOf(count+1), 60*24);
                 }else{
-                    Search search = new Search();
-                    search.setSearch(dto.getSearch());
-                    search.setCount(1L);
-                    searchService.save(search);
+//                    Search search = new Search();
+//                    search.setSearch(dto.getSearch());
+//                    search.setCount(1L);
+//                    searchService.save(search);
+                    redisUtil.saveToken("search_"+dto.getSearch(), "1", 60*24);
                 }
             }
             Integer category_id = null;
