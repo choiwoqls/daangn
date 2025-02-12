@@ -2,6 +2,7 @@ package com.side.daangn.service.serviceImpl.product;
 
 import com.side.daangn.dto.request.ProductDTO;
 import com.side.daangn.dto.request.SearchOptionDTO;
+import com.side.daangn.dto.response.product.ProductDetailDTO;
 import com.side.daangn.dto.response.product.ProductResponseDTO;
 import com.side.daangn.dto.response.user.SearchPageDTO;
 import com.side.daangn.entitiy.product.Category;
@@ -57,16 +58,11 @@ public class ProductServiceImpl implements ProductService {
 
             if(dto.getSearch() != null&& !dto.getSearch().isEmpty()){
                 System.out.println("Search null check");
-                if(redisUtil.getToken("search_"+dto.getSearch()) != null){
-//                  searchService.searchPlus(dto.getSearch());
-                    int count = Integer.parseInt(redisUtil.getToken("search_"+dto.getSearch()));
-                    redisUtil.saveToken("search_"+dto.getSearch(), String.valueOf(count+1), 60*24);
+                if(redisUtil.getToken("search_"+dto.getSearch()+"_1") != null){
+                    int count = Integer.parseInt(redisUtil.getToken("search_"+dto.getSearch()+"_1"));
+                    redisUtil.saveToken("search_"+dto.getSearch()+"_1", String.valueOf(count+1), 60*24);
                 }else{
-//                    Search search = new Search();
-//                    search.setSearch(dto.getSearch());
-//                    search.setCount(1L);
-//                    searchService.save(search);
-                    redisUtil.saveToken("search_"+dto.getSearch(), "1", 60*24);
+                    redisUtil.saveToken("search_"+dto.getSearch()+"_1", "1", 60*24);
                 }
             }
             Integer category_id = null;
@@ -133,5 +129,19 @@ public class ProductServiceImpl implements ProductService {
         } catch (Exception e){
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public ProductDetailDTO productDetail(UUID id) {
+        try{
+            Product product = productRepository.findById(id).orElseThrow(()->new NotFoundException("찾을 수 없는 제품"));
+            return new ProductDetailDTO(product);
+        }catch (NotFoundException e){
+            throw new NotFoundException(e.getMessage());
+        }catch (Exception e){
+            throw new RuntimeException(e.getMessage());
+        }
+
+
     }
 }
