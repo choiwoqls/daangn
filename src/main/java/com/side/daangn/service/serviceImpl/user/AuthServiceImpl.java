@@ -1,8 +1,7 @@
 package com.side.daangn.service.serviceImpl.user;
 
-import com.side.daangn.dto.request.LoginDTO;
+import com.side.daangn.dto.request.auth.LoginDTO;
 import com.side.daangn.dto.response.user.UserDTO;
-import com.side.daangn.entitiy.user.User;
 import com.side.daangn.exception.IncorrectPasswordException;
 import com.side.daangn.exception.NotFoundException;
 import com.side.daangn.exception.UnauthorizedException;
@@ -12,7 +11,6 @@ import com.side.daangn.service.service.user.AuthService;
 import com.side.daangn.service.service.user.UserService;
 import com.side.daangn.util.HashUtil;
 import com.side.daangn.util.JWTAuthenticationResponse;
-import com.side.daangn.util.JwtUtil;
 import com.side.daangn.util.RedisUtil;
 import com.side.daangn.util.UserUtils;
 import lombok.RequiredArgsConstructor;
@@ -22,8 +20,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 
 @Service

@@ -20,7 +20,6 @@ import java.util.UUID;
 @NoArgsConstructor
 public class ProductDTO {
 
-
     private UUID id;
 
     @NotBlank(message = "제목은 필수 입니다.")
