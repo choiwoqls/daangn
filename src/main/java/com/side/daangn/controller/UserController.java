@@ -30,8 +30,8 @@ public class UserController {
 
 
     @GetMapping("/logout")
-    public ResponseEntity<ApiResponse<String>> login(HttpServletRequest request) {
-        return ApiResponse.success(userService.logout(request)).toResponseEntity();
+    public ResponseEntity<ApiResponse<String>> login() {
+        return ApiResponse.success(userService.logout()).toResponseEntity();
     }
 
 

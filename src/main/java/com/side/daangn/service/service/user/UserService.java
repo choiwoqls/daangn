@@ -18,6 +18,6 @@ public interface UserService {
 
     boolean existsByEmail(String email);
 
-    String logout(HttpServletRequest request);
+    String logout();
 
 }
