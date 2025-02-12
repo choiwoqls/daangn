@@ -14,6 +14,8 @@ public interface SearchService {
 
     Search save(Search search);
 
+    void saveSearchToDB();
+
     List<SearchDTO> hottest(String type);
 
 }
