@@ -10,7 +10,7 @@ public interface SearchService {
 
     Search findBySearch(String search);
 
-    void searchPlus(String search);
+    void searchPlus(String search, long count);
 
     Search save(Search search);
 

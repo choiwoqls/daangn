@@ -32,9 +32,9 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Override
-    public void searchPlus(String search) {
+    public void searchPlus(String search, long count) {
         try{
-            searchRepository.searchPlus(search);
+            searchRepository.searchPlus(search, count);
         }catch (Exception e){
             throw new RuntimeException(e);
         }
