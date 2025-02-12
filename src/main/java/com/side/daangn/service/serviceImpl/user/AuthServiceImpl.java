@@ -82,8 +82,7 @@ public class AuthServiceImpl implements AuthService {
     public String checkCode(String email, String code) {
         try {
             redisUtil.matchedToken(email, code);
-            redisUtil.deleteToken(email);
-            redisUtil.saveToken(email+"_success","success",10);
+            redisUtil.saveToken(email,code,10);
             return "인증 성공";
         }catch (UnauthorizedException e){
             throw new UnauthorizedException("코드를 다시 확인해 주세요.");
