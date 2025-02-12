@@ -1,22 +1,18 @@
 package com.side.daangn.controller;
 
 
-import com.side.daangn.dto.request.CodeVerifyDTO;
-import com.side.daangn.dto.request.LoginDTO;
-import com.side.daangn.dto.request.SignUpDTO;
+import com.side.daangn.dto.request.auth.CodeVerifyDTO;
+import com.side.daangn.dto.request.auth.LoginDTO;
+import com.side.daangn.dto.request.auth.SignUpDTO;
 import com.side.daangn.dto.response.user.TimeLimitDTO;
-import com.side.daangn.dto.response.user.UserDTO;
-import com.side.daangn.entitiy.user.User;
 import com.side.daangn.mail.MailService;
 import com.side.daangn.service.service.user.AuthService;
 import com.side.daangn.service.service.user.UserService;
 import com.side.daangn.util.ApiResponse;
 import com.side.daangn.util.JWTAuthenticationResponse;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
-import org.aspectj.apache.bcel.classfile.Code;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -29,8 +25,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/auth")

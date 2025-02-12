@@ -1,4 +1,4 @@
-package com.side.daangn.dto.request;
+package com.side.daangn.dto.request.auth;
 
 
 import jakarta.validation.constraints.NotBlank;
