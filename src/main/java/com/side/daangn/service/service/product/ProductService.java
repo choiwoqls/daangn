@@ -13,6 +13,7 @@ import java.util.UUID;
 
 public interface ProductService {
     SearchPageDTO products_search(SearchOptionDTO dto);
+    SearchPageDTO userProductList(UUID id, Integer pageNum, Integer pageSize);
     ProductDTO addProduct(ProductDTO productDto);
     ProductDetailDTO productDetail(UUID id);
 }

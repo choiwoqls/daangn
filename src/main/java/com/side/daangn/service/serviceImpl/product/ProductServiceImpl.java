@@ -19,6 +19,7 @@ import com.side.daangn.service.service.user.UserService;
 import com.side.daangn.util.RedisUtil;
 import com.side.daangn.util.UserUtils;
 import lombok.RequiredArgsConstructor;
+import org.aspectj.weaver.ast.Not;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -97,6 +98,28 @@ public class ProductServiceImpl implements ProductService {
             return new SearchPageDTO(page,size,maxPage,elementCount, products.getContent());
         }catch (Exception e){
             throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public SearchPageDTO userProductList(UUID user_id, Integer pageNum, Integer pageSize) {
+        try{
+            if(!userService.existsById(user_id)){
+                throw new NotFoundException("찾을 수 없는 유저");
+            }
+            int page = pageNum == null || pageNum<=0 ? 0 : pageNum-1;
+            int size = pageSize == null || pageSize<=0 ? 5 : pageSize;
+            Pageable pageable = PageRequest.of(page, size);
+
+            Page<ProductResponseDTO> products = productRepository.userProductList(pageable, user_id);
+            int maxPage = products.getTotalPages();
+            long elementCount = products.getTotalElements();
+
+            return new SearchPageDTO(page,size,maxPage,elementCount, products.getContent());
+        }catch (NotFoundException e){
+            throw new NotFoundException(e.getMessage());
+        }catch (Exception e){
+            throw new RuntimeException(e.getMessage());
         }
     }
 

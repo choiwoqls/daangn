@@ -50,12 +50,6 @@ public class ProductController {
         return ApiResponse.success(productService.productDetail(product_id)).toResponseEntity();
     }
 
-//    @GetMapping("/{user_id}/")
-//    public ResponseEntity<ApiResponse<ProductDetailDTO>> userProductList(@PathVariable UUID product_id){
-//        System.out.println("product_id :" + product_id);
-//        return ApiResponse.success(productService.productDetail(product_id)).toResponseEntity();
-//    }
-
 
     @PostMapping
     public ResponseEntity<ApiResponse<ProductDTO>> addProduct(@RequestBody @Valid ProductDTO product){
