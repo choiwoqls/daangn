@@ -72,7 +72,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String logout(HttpServletRequest request) {
+    public String logout() {
         try{
 
             UserPrincipal userPrincipal = null;
@@ -103,10 +103,8 @@ public class UserServiceImpl implements UserService {
             if(userRepository.existsByName(dto.getName())){
                 throw new DuplicateException("이미 사용중인 닉네임");
             }
-            if(redisUtil.getToken(dto.getEmail()+"_success")==null||!redisUtil.getToken(dto.getEmail()+"_success").equals("success")){
-                throw new UnauthorizedException("이메일 인증을 확인하시오.");
-            }
-            redisUtil.deleteToken(dto.getEmail()+"_success");
+            redisUtil.matchedToken(dto.getEmail(), dto.getCode());
+            redisUtil.deleteToken(dto.getEmail());
             User user = new User();
             user.setName(dto.getName());
             user.setEmail(dto.getEmail());
