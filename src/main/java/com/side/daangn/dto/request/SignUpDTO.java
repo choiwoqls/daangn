@@ -22,6 +22,9 @@ public class SignUpDTO {
     @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$", message = "8자 이상 알파벳, 숫자, 특수문자를 포함한 비밀번호를 입력해주세요.")
     private String password;
 
+    @NotBlank(message = "코드를 입력해주세요")
+    private String code;
+
 
 
 
