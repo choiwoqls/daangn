@@ -13,10 +13,12 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.util.Arrays;
 import java.util.Locale;
+import java.util.UUID;
 
 @ControllerAdvice
 @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -38,7 +40,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<?> NotFoundException(NotFoundException ex) {
-        return new ApiResponse<>(ex.getMessage(), HttpStatus.CONFLICT).toResponseEntity();
+        return new ApiResponse<>(ex.getMessage(), HttpStatus.NOT_FOUND).toResponseEntity();
     }
 
 
@@ -48,6 +50,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> incorrectPasswordException(IncorrectPasswordException ex){
         String errorMessage = ex.getMessage();
         return new ApiResponse<>(errorMessage, HttpStatus.UNAUTHORIZED).toResponseEntity();
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<?> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex) {
+        if (ex.getRequiredType() == UUID.class) {
+            return new ApiResponse<>("잘못된 ID", HttpStatus.BAD_REQUEST).toResponseEntity();
+        }
+        return new ApiResponse<>("잘못된 파라미터", HttpStatus.BAD_REQUEST).toResponseEntity();
     }
 
 
