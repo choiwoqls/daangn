@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: daangn
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/daangn
+    username: root
+    password: root
+  jpa:
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQLDialect
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+jwt:
+  secret: 6818175bd48089ad532560720419f2a8b0e9edd0f9611030946ab4050492f656ead7ec3db2ca98bdb1ba39af8f4f0114a4bdb6d033d22110375e210ecefea593
+  expiresIn: 86400000
