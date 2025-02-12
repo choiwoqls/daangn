@@ -1,6 +1,7 @@
 package com.side.daangn.service.serviceImpl.user;
 
 import com.side.daangn.dto.request.auth.SignUpDTO;
+import com.side.daangn.dto.response.user.SearchPageDTO;
 import com.side.daangn.dto.response.user.UserDTO;
 import com.side.daangn.entitiy.user.User;
 import com.side.daangn.exception.DuplicateException;
@@ -9,6 +10,7 @@ import com.side.daangn.exception.UnauthorizedException;
 import com.side.daangn.repository.user.UserRepository;
 import com.side.daangn.security.JwtTokenProvider;
 import com.side.daangn.security.UserPrincipal;
+import com.side.daangn.service.service.product.ProductService;
 import com.side.daangn.service.service.user.UserService;
 import com.side.daangn.util.HashUtil;
 import com.side.daangn.util.RedisUtil;
@@ -68,6 +70,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public boolean existsById(UUID id) {
+        try{
+            return userRepository.existsById(id);
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     public String logout() {
         try{
 
@@ -88,6 +99,7 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException(e);
         }
     }
+
 
     @Override
     public String signUp(SignUpDTO dto) {
