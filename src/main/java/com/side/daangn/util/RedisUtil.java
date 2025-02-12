@@ -5,10 +5,14 @@ import com.side.daangn.exception.UnauthorizedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.RedisConnectionFailureException;
+import org.springframework.data.redis.core.Cursor;
+import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -82,6 +86,26 @@ public class RedisUtil {
             throw new NotFoundException(e.getMessage());
         }
     }
+
+    public Set<String> getKeysByPattern(String pattern) {
+        try {
+            return redisTemplate.keys(pattern);
+        } catch (RedisConnectionFailureException e) {
+            System.err.println("Redis 서버에 연결할 수 없습니다: " + e.getMessage());
+            throw new NotFoundException(e.getMessage());
+        } catch (DataAccessException e) {
+            System.err.println("Redis 데이터 액세스 예외 발생: " + e.getMessage());
+            throw new NotFoundException(e.getMessage());
+        } catch (NotFoundException e){
+            throw new NotFoundException(e.getMessage());
+        }
+    }
+    public void deleteKeys(Set<String> keys) {
+        if (keys != null && !keys.isEmpty()) {
+            redisTemplate.delete(keys);
+        }
+    }
+
 
     public void matchedToken(String key, String value) {
         if(!this.getToken(key).equals(value)){
