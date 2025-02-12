@@ -15,8 +15,8 @@ public interface SearchRepository extends JpaRepository<Search, Long> {
 
     @Transactional
     @Modifying
-    @Query("UPDATE Search SET count = count + 1 WHERE search = :search")
-    void searchPlus(String search);
+    @Query("UPDATE Search SET count = count + :count WHERE search = :search")
+    void searchPlus(String search, long count);
 
     List<Search> findTop5ByTypeOrderByCountDesc(int type);
 
