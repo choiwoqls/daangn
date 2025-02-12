@@ -46,6 +46,12 @@ public class SecurityConfig {
             "/swagger-ui/**",
             "/v3/api-docs/**",
     };
+    private static final String[] LIST_WHITELIST = {
+            "/products/**",
+            "/categories/**",
+            "/hottest/**",
+            "/users/{id}"
+    };
 
     //Spring Security에서 인증 오류가 발생할 때 사용자에게 JSON 형식의 에러 응답을 반환
     @Bean
@@ -79,9 +85,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(AUTH_WHITELIST).permitAll()
-                        .requestMatchers(HttpMethod.GET, "/products/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/categories/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/hottest/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, LIST_WHITELIST).permitAll()
                         .anyRequest().authenticated())
                 .exceptionHandling(handling -> handling
                 .authenticationEntryPoint(authenticationErrorHandler())
