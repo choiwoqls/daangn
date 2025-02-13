@@ -20,6 +20,16 @@ spring:
       host: localhost
       port: 6379
 
+cloud:
+  aws:
+    credentials:
+      access-key: AKIA54WIF66UEUUCCNZF
+      secret-key: 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
+    region:
+      static: ap-northeast-2
+    s3:
+      bucket: amz-daangn-bucket
+
 jwt:
   secret: 6818175bd48089ad532560720419f2a8b0e9edd0f9611030946ab4050492f656ead7ec3db2ca98bdb1ba39af8f4f0114a4bdb6d033d22110375e210ecefea593
   expiresIn: 86400000
