@@ -1,5 +1,6 @@
 package com.side.daangn.service.serviceImpl.product;
 
+import com.side.daangn.S3.S3Service;
 import com.side.daangn.dto.request.ProductDTO;
 import com.side.daangn.dto.request.SearchOptionDTO;
 import com.side.daangn.dto.response.product.ProductDetailDTO;
@@ -7,6 +8,7 @@ import com.side.daangn.dto.response.product.ProductResponseDTO;
 import com.side.daangn.dto.response.user.SearchPageDTO;
 import com.side.daangn.entitiy.product.Category;
 import com.side.daangn.entitiy.product.Product;
+import com.side.daangn.entitiy.product.Product_Image;
 import com.side.daangn.entitiy.product.Search;
 import com.side.daangn.entitiy.user.User;
 import com.side.daangn.exception.NotFoundException;
@@ -14,6 +16,7 @@ import com.side.daangn.repository.product.ProductRepository;
 import com.side.daangn.security.UserPrincipal;
 import com.side.daangn.service.service.product.CategoryService;
 import com.side.daangn.service.service.product.ProductService;
+import com.side.daangn.service.service.product.Product_ImageService;
 import com.side.daangn.service.service.product.SearchService;
 import com.side.daangn.service.service.user.UserService;
 import com.side.daangn.util.RedisUtil;
@@ -25,6 +28,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
 import java.util.List;
@@ -42,6 +47,9 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryService categoryService;
 
     @Autowired
+    private final Product_ImageService productImageService;
+
+    @Autowired
     private final UserService userService;
 
     @Autowired
@@ -49,6 +57,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private final RedisUtil redisUtil;
+
+    @Autowired
+    private final S3Service s3Service;
 
     @Override
     public SearchPageDTO products_search(SearchOptionDTO dto) {
@@ -124,11 +135,19 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductDTO addProduct(ProductDTO productDto) {
+    @Transactional
+    public ProductDTO addProduct(ProductDTO productDto, List<MultipartFile> files) {
         try{
+            UUID product_id = UUID.randomUUID();
             if(!categoryService.existsById(productDto.getCategory_id())){
                 throw new NotFoundException("잘못된 카테고리 선택");
             }
+            //파일 검즘하고 aws s3에 이미지 업로드 -> DB에 URL 저장.
+            if(files.isEmpty()){
+                throw new IllegalArgumentException("1개 이상의 상품 사진을 등록해 주세요.");
+            }
+
+
             Product product = new Product();
             product.setTitle(productDto.getTitle());
             product.setBody(productDto.getBody());
@@ -145,11 +164,30 @@ public class ProductServiceImpl implements ProductService {
 
             product.setPrice(productDto.getPrice());
 
-            return new ProductDTO(productRepository.save(product));
+            UUID img_id = UUID.randomUUID();
+            String imgType = files.get(0).getContentType().split("/")[1];
+
+            product.setImage(img_id+"."+imgType);
+
+            product = productRepository.save(product);
+
+
+            for(MultipartFile file : files){
+                String fileName = s3Service.uploadImage(file, img_id);
+                Product_Image product_image = new Product_Image();
+                product_image.setProduct(product);
+                product_image.setFileName(fileName);
+                productImageService.save(product_image);
+                img_id = UUID.randomUUID();
+            }
+
+            return new ProductDTO(product);
 
         }catch (NotFoundException e){
             throw new NotFoundException(e.getMessage());
-        } catch (Exception e){
+        }catch (IllegalArgumentException e){
+            throw new IllegalArgumentException(e.getMessage());
+        }catch (Exception e){
             throw new RuntimeException(e);
         }
     }

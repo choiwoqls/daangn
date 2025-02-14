@@ -1,5 +1,6 @@
 package com.side.daangn.controller;
 
+import com.side.daangn.S3.S3Service;
 import com.side.daangn.dto.request.ProductDTO;
 import com.side.daangn.dto.request.SearchOptionDTO;
 import com.side.daangn.dto.response.product.ProductDetailDTO;
@@ -23,8 +24,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,6 +42,9 @@ public class ProductController {
 
     @Autowired
     private final ProductService productService;
+
+    @Autowired
+    private final S3Service s3Service;
 
 
     @GetMapping
@@ -52,10 +60,12 @@ public class ProductController {
 
 
     @PostMapping
-    public ResponseEntity<ApiResponse<ProductDTO>> addProduct(@RequestBody @Valid ProductDTO product){
-        return ApiResponse.success(productService.addProduct(product)).toResponseEntity();
+    public ResponseEntity<ApiResponse<ProductDTO>> addProduct(
+            @RequestPart("product") @Valid ProductDTO product,
+            @RequestPart("file") List<MultipartFile> files
+            ){
+        System.out.println("file :" + files);
+        return ApiResponse.success(productService.addProduct(product, files)).toResponseEntity();
     }
-
-
 
 }
