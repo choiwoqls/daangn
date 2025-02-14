@@ -45,6 +45,7 @@ public class SecurityConfig {
             "/auth/**",
             "/swagger-ui/**",
             "/v3/api-docs/**",
+            "/image/**",
     };
     private static final String[] LIST_WHITELIST = {
             "/products/**",
