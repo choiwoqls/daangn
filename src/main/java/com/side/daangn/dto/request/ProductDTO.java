@@ -35,6 +35,8 @@ public class ProductDTO {
     @Max(value = 1, message = "잘못된 선택 : only_on_sale")
     private int only_on_sale;
 
+    private String image;
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime createdAt;
 
@@ -53,6 +55,7 @@ public class ProductDTO {
         this.price = product.getPrice();
         this.category_id = product.getCategory().getId();
         this.only_on_sale = product.getOnly_on_sale();
+        this.image=product.getImage();
     }
 
 }
