@@ -12,10 +12,12 @@ public class UserProfileDTO {
     private UUID id;
     private String name;
     private double temp;
+    private String image;
 
     public UserProfileDTO(User user){
         this.id=user.getId();
         this.name=user.getName();
         this.temp= user.getTemp();
+        this.image=user.getImage();
     }
 }

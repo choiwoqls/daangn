@@ -36,6 +36,8 @@ public class UserDTO {
 
     private double temp;
 
+    private String image;
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime createdAt;
 
@@ -48,6 +50,7 @@ public class UserDTO {
         this.name = user.getName();
         this.password = user.getPassword();
         this.temp = user.getTemp();
+        this.image = user.getImage();
         this.createdAt = user.getCreatedAt();
         this.updatedAt = user.getUpdatedAt();
     }

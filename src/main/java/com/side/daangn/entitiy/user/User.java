@@ -47,6 +47,8 @@ public class User {
 
     private double temp;
 
+    private String image;
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     @CreatedDate
     private LocalDateTime createdAt;

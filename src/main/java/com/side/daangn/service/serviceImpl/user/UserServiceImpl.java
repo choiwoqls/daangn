@@ -1,5 +1,6 @@
 package com.side.daangn.service.serviceImpl.user;
 
+import com.side.daangn.S3.S3Service;
 import com.side.daangn.dto.request.auth.SignUpDTO;
 import com.side.daangn.dto.response.user.SearchPageDTO;
 import com.side.daangn.dto.response.user.UserDTO;
@@ -19,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
@@ -34,6 +36,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private final RedisUtil redisUtil;
+
+    @Autowired
+    private final S3Service s3Service;
 
 
     @Override
@@ -102,8 +107,9 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public String signUp(SignUpDTO dto) {
+    public String signUp(SignUpDTO dto, MultipartFile file) {
         double temp = 36.5;
+        UUID img_id = UUID.randomUUID();
         try {
             if(userRepository.existsByEmail(dto.getEmail())){
                 throw new DuplicateException("이미 사용중인 이메일");
@@ -113,11 +119,19 @@ public class UserServiceImpl implements UserService {
             }
             redisUtil.matchedToken(dto.getEmail(), dto.getCode());
             redisUtil.deleteToken(dto.getEmail());
+
+            String image = "8983cc4d-f7c2-4471-967c-387dd9ac5967.png";
+
+            if(!file.isEmpty()){
+                image = s3Service.uploadImage(file, img_id);
+            }
+
             User user = new User();
             user.setName(dto.getName());
             user.setEmail(dto.getEmail());
             user.setPassword(HashUtil.hashPassword(dto.getPassword()));
             user.setTemp(temp);
+            user.setImage(image);
             userRepository.save(user);
             return "회원 가입 성공";
 
