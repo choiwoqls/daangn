@@ -3,11 +3,13 @@ package com.side.daangn.dto.response.product;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.side.daangn.dto.response.user.UserProfileDTO;
 import com.side.daangn.entitiy.product.Product;
+import com.side.daangn.entitiy.product.Product_Image;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.userdetails.User;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -29,6 +31,8 @@ public class ProductDetailDTO {
 
     private UserProfileDTO user;
 
+    private List<String> product_images;
+
     public ProductDetailDTO(Product product){
         this.title = product.getTitle();
         this.body = product.getBody();
@@ -38,6 +42,10 @@ public class ProductDetailDTO {
         this.updatedAt = product.getUpdatedAt();
         this.category_id = product.getCategory().getId();
         this.user = new UserProfileDTO(product.getUser());
+        this.product_images =
+                product.getProductImages().stream()
+                        .map(Product_Image::getFileName).toList();
+
     }
 
 

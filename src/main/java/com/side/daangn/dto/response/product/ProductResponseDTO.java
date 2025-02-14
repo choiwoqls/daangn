@@ -16,12 +16,14 @@ public class ProductResponseDTO {
     private String title;
     private int price;
     private int only_on_sale;
+    private String image;
 
     public ProductResponseDTO(Product product){
         this.id=product.getId();
         this.title=product.getTitle();
         this.price=product.getPrice();
         this.only_on_sale=product.getOnly_on_sale();
+        this.image=product.getImage();
     }
 
 }
