@@ -23,8 +23,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/auth")
@@ -49,8 +51,11 @@ public class AuthController {
 
 
     @PostMapping("/sign-up")
-    public ResponseEntity<ApiResponse<String>> signUp(@RequestBody @Valid SignUpDTO signUpDto) {
-        return ApiResponse.success(userService.signUp(signUpDto)).toResponseEntity();
+    public ResponseEntity<ApiResponse<String>> signUp(
+            @RequestPart("sign-up") @Valid SignUpDTO signUpDto,
+            @RequestPart(value = "file", required = false) MultipartFile file
+            ) {
+        return ApiResponse.success(userService.signUp(signUpDto, file)).toResponseEntity();
     }
 
     @GetMapping("/verify-email")
