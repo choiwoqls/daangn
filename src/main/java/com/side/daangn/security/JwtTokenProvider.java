@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Component
 public class JwtTokenProvider {
@@ -29,16 +30,14 @@ public class JwtTokenProvider {
     @Value("${jwt.expiresIn}")
     private long EXPIRATION_TIME;
 
-     public String generateToken(Authentication authentication) {
-        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+     public String generateToken(UUID id) {
+        //UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + EXPIRATION_TIME);
-        // Extract roles from userPrincipal and convert them to a list of role names
           try {
               String jwt =  Jwts.builder()
-                      .id(userPrincipal.getId() + "")
-                      .subject(userPrincipal.getId() + "")
-                      .claim("user", userPrincipal)
+                      .id(id + "")
+                      .subject(id + "")
                       .issuedAt(new Date(System.currentTimeMillis()))
                       .expiration(expiryDate)
                       .signWith(JwtUtil.getKeyFromSecret(SECRET_KEY))
