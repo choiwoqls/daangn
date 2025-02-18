@@ -10,8 +10,10 @@ import com.side.daangn.service.service.user.AuthService;
 import com.side.daangn.service.service.user.UserService;
 import com.side.daangn.util.ApiResponse;
 import com.side.daangn.util.JWTAuthenticationResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +29,8 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/auth")
@@ -55,13 +59,13 @@ public class AuthController {
             @RequestPart("sign-up") @Valid SignUpDTO signUpDto,
             @RequestPart(value = "file", required = false) MultipartFile file
             ) {
-        return ApiResponse.success(userService.signUp(signUpDto, file)).toResponseEntity();
+        return ApiResponse.success(userService.signUp(signUpDto, file, true)).toResponseEntity();
     }
 
     @GetMapping("/verify-email")
     @ResponseBody
     public ResponseEntity<ApiResponse<TimeLimitDTO>> verifyEmail(@RequestParam @Pattern(regexp = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$", message = "올바른 이메일 형식으로 입력해 주세요.") String email){
-        TimeLimitDTO limit = mailService.sendMailAuth(email);
+        TimeLimitDTO limit = authService.sendMailAuth(email);
         return ApiResponse.success(limit).toResponseEntity();
     }
 
@@ -69,6 +73,21 @@ public class AuthController {
     public ResponseEntity<ApiResponse<String>> verifyCode(@ModelAttribute @Valid CodeVerifyDTO dto){
         return ApiResponse.success(authService.checkCode(dto.getEmail(), dto.getCode())).toResponseEntity();
     }
+
+//    @GetMapping("/kakao")
+//    public void kakaoLoginPage(HttpServletResponse response) throws IOException {
+//        response.sendRedirect("https://kauth.kakao.com/oauth/authorize?client_id=c12186ef50b138fbb2a9f7ec238d05af&redirect_uri=http://localhost:8080/login/oauth2/code/kakao&response_type=code");
+//        //return "redirect:/https://kauth.kakao.com/oauth/authorize?client_id=c12186ef50b138fbb2a9f7ec238d05af&redirect_uri=http://localhost:8080/auth/kakao/callback&response_type=code";
+//    }
+//    @GetMapping("/kakao/callback")
+//    public ResponseEntity<ApiResponse<JWTAuthenticationResponse>> kakaoLogin(@RequestParam String code){
+//        System.out.println("kakao code : "+ code);
+//
+//        return ApiResponse.success(authService.kakaoLogin(code)).toResponseEntity();
+//    }
+
+
+
 
 
 

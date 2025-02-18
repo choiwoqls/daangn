@@ -1,14 +1,22 @@
 package com.side.daangn.service.serviceImpl.user;
 
 import com.side.daangn.dto.request.auth.LoginDTO;
+import com.side.daangn.dto.request.auth.SignUpDTO;
+import com.side.daangn.dto.response.kakao.KakaoUserDTO;
+import com.side.daangn.dto.response.user.TimeLimitDTO;
 import com.side.daangn.dto.response.user.UserDTO;
+import com.side.daangn.exception.DuplicateException;
 import com.side.daangn.exception.IncorrectPasswordException;
 import com.side.daangn.exception.NotFoundException;
 import com.side.daangn.exception.UnauthorizedException;
+import com.side.daangn.mail.MailService;
 import com.side.daangn.security.JwtTokenProvider;
 import com.side.daangn.security.UserPrincipal;
+import com.side.daangn.service.service.kakao.KakaoService;
 import com.side.daangn.service.service.user.AuthService;
 import com.side.daangn.service.service.user.UserService;
+import com.side.daangn.util.CodeUtil;
+import com.side.daangn.util.EmptyMultipartFile;
 import com.side.daangn.util.HashUtil;
 import com.side.daangn.util.JWTAuthenticationResponse;
 import com.side.daangn.util.RedisUtil;
@@ -20,6 +28,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.UUID;
 
 
 @Service
@@ -33,12 +45,20 @@ public class AuthServiceImpl implements AuthService {
     private final RedisUtil redisUtil;
 
     @Autowired
-    private AuthenticationProvider authenticationProvider;
+    private final AuthenticationProvider authenticationProvider;
 
     @Autowired
-    private JwtTokenProvider jwtTokenProvider;
+    private final JwtTokenProvider jwtTokenProvider;
+
+    @Autowired
+    private final KakaoService kakaoService;
+
+    @Autowired
+    private final MailService mailService;
 
 
+
+    @Transactional
     @Override
     public JWTAuthenticationResponse login(LoginDTO loginDTO) {
         try{
@@ -46,6 +66,8 @@ public class AuthServiceImpl implements AuthService {
             String password = loginDTO.getPassword();
 
             UserDTO user = userService.findByEmail(email);
+            System.out.println("DB password : " + user.getPassword());
+            System.out.println("Password : " + password);
 
             if(!HashUtil.isTheSame(password, user.getPassword())){
                  throw new IncorrectPasswordException("일치하지 않는 비밀번호");
@@ -58,9 +80,9 @@ public class AuthServiceImpl implements AuthService {
             UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(loginDTO.getEmail(), loginDTO.getPassword());
             Authentication authentication = authenticationProvider.authenticate(authRequest);
             SecurityContextHolder.getContext().setAuthentication(authentication);
-
-            jwt = jwtTokenProvider.generateToken(authentication);
             userPrincipal = UserUtils.getLoggedInUser();
+
+            jwt = jwtTokenProvider.generateToken(userPrincipal.getId());
             userDto = userService.findById(userPrincipal.getId());
 
             redisUtil.saveToken(String.valueOf(userDto.getId()), jwt, 60);
@@ -87,6 +109,33 @@ public class AuthServiceImpl implements AuthService {
         } catch (Exception e){
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public TimeLimitDTO sendMailAuth(String email) {
+        try{
+            if(userService.existsByEmail(email)){
+                throw new DuplicateException("이미 사용중인 이메일");
+            }
+            TimeLimitDTO limit = new TimeLimitDTO();
+
+            if(redisUtil.getToken(email) != null){
+                Long remainingValidTime = redisUtil.getRemainingValidTime(email);
+                limit.setMsg(remainingValidTime + "초 뒤에 다시 시도해 주세요.");
+                limit.setTtl(remainingValidTime);
+                return limit;
+            }
+            limit.setMsg("인증번호 전송.");
+            limit.setTtl(mailService.sendMailAuth(email));
+
+            return limit;
+        }catch (DuplicateException e){
+            throw new DuplicateException(e.getMessage());
+        }catch (Exception e){
+            System.out.println("here?");
+            throw new RuntimeException(e);
+        }
+
     }
 
 
