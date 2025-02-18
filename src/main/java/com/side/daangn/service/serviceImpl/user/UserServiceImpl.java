@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
@@ -84,6 +85,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public boolean existsByName(String name) {
+        try{
+            return userRepository.existsByName(name);
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     public String logout() {
         try{
 
@@ -106,8 +116,9 @@ public class UserServiceImpl implements UserService {
     }
 
 
+    @Transactional
     @Override
-    public String signUp(SignUpDTO dto, MultipartFile file) {
+    public String signUp(SignUpDTO dto, MultipartFile file, boolean check) {
         double temp = 36.5;
         UUID img_id = UUID.randomUUID();
         try {
@@ -117,10 +128,13 @@ public class UserServiceImpl implements UserService {
             if(userRepository.existsByName(dto.getName())){
                 throw new DuplicateException("이미 사용중인 닉네임");
             }
-            redisUtil.matchedToken(dto.getEmail(), dto.getCode());
-            redisUtil.deleteToken(dto.getEmail());
+            if(check){
+                redisUtil.matchedToken(dto.getEmail(), dto.getCode());
+                redisUtil.deleteToken(dto.getEmail());
+            }
 
             String image = "8983cc4d-f7c2-4471-967c-387dd9ac5967.png";
+
 
             if(!file.isEmpty()){
                 image = s3Service.uploadImage(file, img_id);
@@ -143,7 +157,6 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException(e);
         }
     }
-
 
 
 }
