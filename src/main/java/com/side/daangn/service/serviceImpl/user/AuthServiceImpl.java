@@ -2,7 +2,6 @@ package com.side.daangn.service.serviceImpl.user;
 
 import com.side.daangn.dto.request.auth.LoginDTO;
 import com.side.daangn.dto.request.auth.SignUpDTO;
-import com.side.daangn.dto.response.kakao.KakaoUserDTO;
 import com.side.daangn.dto.response.user.TimeLimitDTO;
 import com.side.daangn.dto.response.user.UserDTO;
 import com.side.daangn.exception.DuplicateException;
@@ -12,7 +11,6 @@ import com.side.daangn.exception.UnauthorizedException;
 import com.side.daangn.mail.MailService;
 import com.side.daangn.security.JwtTokenProvider;
 import com.side.daangn.security.UserPrincipal;
-import com.side.daangn.service.service.kakao.KakaoService;
 import com.side.daangn.service.service.user.AuthService;
 import com.side.daangn.service.service.user.UserService;
 import com.side.daangn.util.CodeUtil;
@@ -49,9 +47,6 @@ public class AuthServiceImpl implements AuthService {
 
     @Autowired
     private final JwtTokenProvider jwtTokenProvider;
-
-    @Autowired
-    private final KakaoService kakaoService;
 
     @Autowired
     private final MailService mailService;
