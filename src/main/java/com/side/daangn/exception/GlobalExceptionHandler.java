@@ -6,6 +6,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.core.OAuth2AuthorizationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -41,6 +42,13 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<?> NotFoundException(NotFoundException ex) {
         return new ApiResponse<>(ex.getMessage(), HttpStatus.NOT_FOUND).toResponseEntity();
+    }
+
+    //카카오 로그인 중복 데이터 예외
+    @ExceptionHandler(OAuth2AuthorizationException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ResponseEntity<?> OAuth2AuthorizationException(OAuth2AuthorizationException ex) {
+        return new ApiResponse<>(ex.getMessage(), HttpStatus.CONFLICT).toResponseEntity();
     }
 
 
