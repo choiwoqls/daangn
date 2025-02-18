@@ -2,9 +2,12 @@ package com.side.daangn.config;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.side.daangn.oauth2.PrincipalOauth2UserService;
+import com.side.daangn.oauth2.SocialLoginFailedHandler;
 import com.side.daangn.security.CustomUserDetailsService;
 import com.side.daangn.security.JwtAuthenticationEntryPoint;
 import com.side.daangn.security.JwtAuthenticationFilter;
+import com.side.daangn.oauth2.SocialLoginSuccessHandler;
 import com.side.daangn.util.ApiResponse;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
@@ -31,6 +34,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
+
 @RequiredArgsConstructor
 @EnableWebSecurity
 @Configuration
@@ -40,12 +45,15 @@ public class SecurityConfig {
 
     private final CustomUserDetailsService userService;
 
+    private final PrincipalOauth2UserService principalOauth2UserService;
+
 
     private static final String[] AUTH_WHITELIST = {
             "/auth/**",
             "/swagger-ui/**",
             "/v3/api-docs/**",
             "/image/**",
+            "/login/**"
     };
     private static final String[] LIST_WHITELIST = {
             "/products/**",
@@ -58,6 +66,12 @@ public class SecurityConfig {
     @Bean
     public AuthenticationEntryPoint authenticationErrorHandler() {
         return (request, response, ex) -> {
+            System.out.println("error CHECK 1: " + ex.getMessage());
+            System.out.println("error CHECK 2: " + ex.getLocalizedMessage());
+            System.out.println("error CHECK 3: " + ex.getClass());
+            System.out.println("error CHECK 4: " + ex.getCause());
+            System.out.println("error CHECK 5: " + Arrays.toString(ex.getSuppressed()));
+
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             ServletOutputStream out = response.getOutputStream();
@@ -95,8 +109,36 @@ public class SecurityConfig {
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
         ;
+
+        http.oauth2Login(form ->{
+            form
+                    .userInfoEndpoint(userInfoEndpointConfig -> {
+                        userInfoEndpointConfig.userService(principalOauth2UserService);
+                    })
+                    .successHandler(socialLoginSuccessHandler())
+                    //.failureHandler(socialLoginFailedHandler())
+            ;
+        });
+
+        http.formLogin(form ->{
+            form
+                    .loginProcessingUrl("/login")
+            ;
+        });
+
         return http.build();
     }
+
+    @Bean
+    public SocialLoginSuccessHandler socialLoginSuccessHandler(){
+        return new SocialLoginSuccessHandler();
+    }
+
+//    @Bean
+//    public SocialLoginFailedHandler socialLoginFailedHandler(){
+//        return new SocialLoginFailedHandler();
+//    }
+
 
     @Bean
 	public JwtAuthenticationFilter jwtAuthenticationFilter() {
