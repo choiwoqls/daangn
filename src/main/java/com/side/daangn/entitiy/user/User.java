@@ -49,6 +49,9 @@ public class User {
 
     private String image;
 
+    private String provider;
+    private String providerId;
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     @CreatedDate
     private LocalDateTime createdAt;
