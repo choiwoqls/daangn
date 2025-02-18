@@ -9,7 +9,8 @@ import java.util.UUID;
 
 public interface UserService {
 
-    String signUp(SignUpDTO dto, MultipartFile file);
+    String signUp(SignUpDTO dto, MultipartFile file, boolean check);
+
 
     UserDTO findByEmail(String email);
 
@@ -18,6 +19,8 @@ public interface UserService {
     boolean existsByEmail(String email);
 
     boolean existsById(UUID id);
+
+    boolean existsByName(String name);
 
     String logout();
 
