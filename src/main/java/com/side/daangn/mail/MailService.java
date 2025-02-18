@@ -4,5 +4,6 @@ import com.side.daangn.dto.response.user.TimeLimitDTO;
 
 public interface MailService {
 
-    TimeLimitDTO sendMailAuth(String email);
+    Long sendMailAuth(String email);
+    void sendMailPassword(String email, String text);
 }

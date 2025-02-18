@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -25,30 +26,33 @@ public class MailServiceImpl implements MailService{
 
     @Override
     @Async
-    public TimeLimitDTO sendMailAuth(String email) {
+    public Long sendMailAuth(String email) {
         try{
-            if(userService.existsByEmail(email)){
-                throw new DuplicateException("이미 사용중인 이메일");
-            }
-            TimeLimitDTO limit = new TimeLimitDTO();
-            if(redisUtil.getToken(email) != null){
-                Long remainingValidTime = redisUtil.getRemainingValidTime(email);
-                limit.setMsg(remainingValidTime + "초 뒤에 다시 시도해 주세요.");
-                limit.setTtl(remainingValidTime);
-                return limit;
-            }
+
             long min = 3L;
             String code = CodeUtil.generate();
-            //mailUtil.sendMailReject(email,code);
+            String title = "이메일 인증 - Daangn";
+            String text = "인증번호 : " + code;
+//            mailUtil.sendMailReject(email,title,text);
             redisUtil.saveToken(email, code, min);
-            long ttl = redisUtil.getRemainingValidTime(email);
-            limit.setMsg("인증번호 전송.");
-            limit.setTtl(ttl);
-            return limit;
+
+            return redisUtil.getRemainingValidTime(email);
         }catch (DuplicateException e){
             throw new DuplicateException(e.getMessage());
         }catch (Exception e){
-            System.out.println("here?");
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Transactional
+    @Override
+    public void sendMailPassword(String email, String password) {
+        try{
+            String title = "임시 비밀번호 - Daangn";
+            String text = "임시 비밀번호 = " + password;
+            mailUtil.sendMailReject(email,title,text);
+
+        }catch (Exception e){
             throw new RuntimeException(e);
         }
     }
