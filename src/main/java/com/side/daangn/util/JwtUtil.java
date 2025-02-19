@@ -10,6 +10,7 @@ import java.util.Base64;
 public class JwtUtil {
     public static SecretKey getKeyFromSecret(String secret) {
         byte[] decodedKey = Base64.getDecoder().decode(secret);
+        //HmacSHA512
         return Keys.hmacShaKeyFor(decodedKey);
     }
 
