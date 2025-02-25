@@ -16,7 +16,6 @@ import com.side.daangn.service.service.user.UserService;
 import com.side.daangn.util.HashUtil;
 import com.side.daangn.util.RedisUtil;
 import com.side.daangn.util.UserUtils;
-import com.side.daangn.util.WebpUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -119,7 +118,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public String signUp(SignUpDTO dto, MultipartFile file, boolean check) {
+    public String signUp(SignUpDTO dto, MultipartFile file) {
         double temp = 36.5;
         UUID img_id = UUID.randomUUID();
         try {
@@ -129,16 +128,15 @@ public class UserServiceImpl implements UserService {
             if(userRepository.existsByName(dto.getName())){
                 throw new DuplicateException("이미 사용중인 닉네임");
             }
-            if(check){
-                redisUtil.matchedToken(dto.getEmail(), dto.getCode());
-                redisUtil.deleteToken(dto.getEmail());
-            }
+
+            redisUtil.matchedToken(dto.getEmail(), dto.getCode());
+            redisUtil.deleteToken(dto.getEmail());
+
 
             String image = "8983cc4d-f7c2-4471-967c-387dd9ac5967.png";
 
 
             if(!file.isEmpty()){
-                //file = (MultipartFile) WebpUtil.convertToWebp(file, img_id);
                 image = s3Service.uploadImage(file, img_id);
             }
 
