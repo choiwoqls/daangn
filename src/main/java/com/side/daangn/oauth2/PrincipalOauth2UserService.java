@@ -5,6 +5,7 @@ import com.side.daangn.exception.DuplicateException;
 import com.side.daangn.repository.user.UserRepository;
 import com.side.daangn.security.UserPrincipal;
 import com.side.daangn.util.HashUtil;
+import com.side.daangn.util.NickNameUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -44,7 +45,10 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
 
         String provider =  oAuth2UserInfo.getProvider();
         String providerId = oAuth2UserInfo.getProviderId();
-        String name = provider + "_" + providerId; // google_10021320120
+        String name = NickNameUtil.randonName();
+        while(userRepository.existsByName(name)){
+            name = NickNameUtil.randonName();
+        }
         //임시 password 생성 -> mail로 전송.
         String password = HashUtil.hashPassword("password123!");
         String email = oAuth2UserInfo.getEmail();
