@@ -1,6 +1,7 @@
 package com.side.daangn.controller;
 
 import com.side.daangn.S3.S3Service;
+import com.side.daangn.service.service.product.ProductService;
 import com.side.daangn.util.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,9 +10,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/image")
@@ -23,12 +29,22 @@ public class ImageController {
     @Autowired
     private final S3Service s3Service;
 
+    @Autowired
+    private final ProductService productService;
+
 
     @GetMapping("/product/{filename}")
     public ResponseEntity<byte[]> getProductImg(@PathVariable("filename")String fileName){
         return ResponseEntity.ok()
                 .contentType(MediaType.IMAGE_JPEG)
                 .body(s3Service.getImage(fileName));
+    }
+
+    @PostMapping("/product")
+    public ResponseEntity<ApiResponse<List<String>>> productImgUpload(
+            @RequestPart(value = "file", required = false) List<MultipartFile> files
+            ){
+        return ApiResponse.success(productService.uploadProductImg(files)).toResponseEntity();
     }
 
     @GetMapping("/user/{filename}")
