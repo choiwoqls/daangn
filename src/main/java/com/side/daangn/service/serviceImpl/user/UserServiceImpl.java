@@ -16,6 +16,7 @@ import com.side.daangn.service.service.user.UserService;
 import com.side.daangn.util.HashUtil;
 import com.side.daangn.util.RedisUtil;
 import com.side.daangn.util.UserUtils;
+import com.side.daangn.util.WebpUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -137,8 +138,11 @@ public class UserServiceImpl implements UserService {
 
 
             if(!file.isEmpty()){
+                //file = (MultipartFile) WebpUtil.convertToWebp(file, img_id);
                 image = s3Service.uploadImage(file, img_id);
             }
+
+
 
             User user = new User();
             user.setName(dto.getName());

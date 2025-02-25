@@ -14,6 +14,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -45,6 +46,8 @@ public class ProductDTO {
 
     @Min(value = 1, message = "카테고리를 선택해 주세요")
     private int category_id;
+
+    private List<String> imgList;
 
     public ProductDTO(Product product){
         this.id = product.getId();

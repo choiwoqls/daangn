@@ -61,11 +61,9 @@ public class ProductController {
 
     @PostMapping
     public ResponseEntity<ApiResponse<ProductDTO>> addProduct(
-            @RequestPart("product") @Valid ProductDTO product,
-            @RequestPart("file") List<MultipartFile> files
+            @RequestBody @Valid ProductDTO product
             ){
-        System.out.println("file :" + files);
-        return ApiResponse.success(productService.addProduct(product, files)).toResponseEntity();
+        return ApiResponse.success(productService.addProduct(product)).toResponseEntity();
     }
 
 }

@@ -22,6 +22,7 @@ import com.side.daangn.service.service.user.UserService;
 import com.side.daangn.util.RedisUtil;
 import com.side.daangn.util.UserUtils;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.BadRequestException;
 import org.aspectj.weaver.ast.Not;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -31,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -136,17 +138,13 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public ProductDTO addProduct(ProductDTO productDto, List<MultipartFile> files) {
+    public ProductDTO addProduct(ProductDTO productDto) {
         try{
             UUID product_id = UUID.randomUUID();
             if(!categoryService.existsById(productDto.getCategory_id())){
                 throw new NotFoundException("잘못된 카테고리 선택");
             }
             //파일 검즘하고 aws s3에 이미지 업로드 -> DB에 URL 저장.
-            if(files.isEmpty()){
-                throw new IllegalArgumentException("1개 이상의 상품 사진을 등록해 주세요.");
-            }
-
 
             Product product = new Product();
             product.setTitle(productDto.getTitle());
@@ -164,21 +162,16 @@ public class ProductServiceImpl implements ProductService {
 
             product.setPrice(productDto.getPrice());
 
-            UUID img_id = UUID.randomUUID();
-            String imgType = files.get(0).getContentType().split("/")[1];
-
-            product.setImage(img_id+"."+imgType);
+            product.setImage(productDto.getImgList().get(0));
 
             product = productRepository.save(product);
 
 
-            for(MultipartFile file : files){
-                String fileName = s3Service.uploadImage(file, img_id);
+            for(String imgName : productDto.getImgList()){
                 Product_Image product_image = new Product_Image();
                 product_image.setProduct(product);
-                product_image.setFileName(fileName);
+                product_image.setFileName(imgName);
                 productImageService.save(product_image);
-                img_id = UUID.randomUUID();
             }
 
             return new ProductDTO(product);
@@ -204,5 +197,24 @@ public class ProductServiceImpl implements ProductService {
         }
 
 
+    }
+
+    @Override
+    public List<String> uploadProductImg(List<MultipartFile> files) {
+        try {
+            if(files.isEmpty()){
+                throw new IllegalArgumentException("1개 이상의 상품 사진을 등록해 주세요.");
+            }
+            List<String> imgList = new ArrayList<>();
+            for(MultipartFile file : files){
+                String fileName = s3Service.uploadImage(file, UUID.randomUUID());
+                imgList.add(fileName);
+            }
+            return imgList;
+        }catch (IllegalArgumentException e){
+            throw new IllegalArgumentException(e.getMessage());
+        }catch (Exception e){
+            throw new RuntimeException("product 파일 업로드");
+        }
     }
 }
