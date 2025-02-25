@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public interface UserService {
 
-    String signUp(SignUpDTO dto, MultipartFile file, boolean check);
+    String signUp(SignUpDTO dto, MultipartFile file);
 
 
     UserDTO findByEmail(String email);

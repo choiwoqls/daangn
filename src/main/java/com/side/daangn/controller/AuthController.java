@@ -59,7 +59,7 @@ public class AuthController {
             @RequestPart("sign-up") @Valid SignUpDTO signUpDto,
             @RequestPart(value = "file", required = false) MultipartFile file
             ) {
-        return ApiResponse.success(userService.signUp(signUpDto, file, true)).toResponseEntity();
+        return ApiResponse.success(userService.signUp(signUpDto, file)).toResponseEntity();
     }
 
     @GetMapping("/verify-email")
@@ -73,19 +73,6 @@ public class AuthController {
     public ResponseEntity<ApiResponse<String>> verifyCode(@ModelAttribute @Valid CodeVerifyDTO dto){
         return ApiResponse.success(authService.checkCode(dto.getEmail(), dto.getCode())).toResponseEntity();
     }
-
-//    @GetMapping("/kakao")
-//    public void kakaoLoginPage(HttpServletResponse response) throws IOException {
-//        response.sendRedirect("https://kauth.kakao.com/oauth/authorize?client_id=c12186ef50b138fbb2a9f7ec238d05af&redirect_uri=http://localhost:8080/login/oauth2/code/kakao&response_type=code");
-//        //return "redirect:/https://kauth.kakao.com/oauth/authorize?client_id=c12186ef50b138fbb2a9f7ec238d05af&redirect_uri=http://localhost:8080/auth/kakao/callback&response_type=code";
-//    }
-//    @GetMapping("/kakao/callback")
-//    public ResponseEntity<ApiResponse<JWTAuthenticationResponse>> kakaoLogin(@RequestParam String code){
-//        System.out.println("kakao code : "+ code);
-//
-//        return ApiResponse.success(authService.kakaoLogin(code)).toResponseEntity();
-//    }
-
 
 
 
