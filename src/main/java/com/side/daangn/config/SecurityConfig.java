@@ -66,12 +66,6 @@ public class SecurityConfig {
     @Bean
     public AuthenticationEntryPoint authenticationErrorHandler() {
         return (request, response, ex) -> {
-            System.out.println("error CHECK 1: " + ex.getMessage());
-            System.out.println("error CHECK 2: " + ex.getLocalizedMessage());
-            System.out.println("error CHECK 3: " + ex.getClass());
-            System.out.println("error CHECK 4: " + ex.getCause());
-            System.out.println("error CHECK 5: " + Arrays.toString(ex.getSuppressed()));
-
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             ServletOutputStream out = response.getOutputStream();
