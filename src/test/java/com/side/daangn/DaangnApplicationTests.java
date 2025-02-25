@@ -8,6 +8,7 @@ class DaangnApplicationTests {
 
 	@Test
 	void contextLoads() {
+		System.out.println("test");
 	}
 
 }
