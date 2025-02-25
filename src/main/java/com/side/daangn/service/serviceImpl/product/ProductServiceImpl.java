@@ -107,8 +107,7 @@ public class ProductServiceImpl implements ProductService {
             Page<ProductResponseDTO> products = productRepository.productList(pageable, dto.getSearch(), category_id, only_on_sale, min, max);
 
             int maxPage = products.getTotalPages();
-            long elementCount = products.getTotalElements();
-            return new SearchPageDTO(page,size,maxPage,elementCount, products.getContent());
+            return new SearchPageDTO(page,size,maxPage, products.getContent());
         }catch (Exception e){
             throw new RuntimeException(e);
         }
@@ -126,9 +125,8 @@ public class ProductServiceImpl implements ProductService {
 
             Page<ProductResponseDTO> products = productRepository.userProductList(pageable, user_id);
             int maxPage = products.getTotalPages();
-            long elementCount = products.getTotalElements();
 
-            return new SearchPageDTO(page,size,maxPage,elementCount, products.getContent());
+            return new SearchPageDTO(page,size,maxPage, products.getContent());
         }catch (NotFoundException e){
             throw new NotFoundException(e.getMessage());
         }catch (Exception e){
