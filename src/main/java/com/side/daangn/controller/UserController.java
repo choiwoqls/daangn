@@ -7,6 +7,7 @@ import com.side.daangn.dto.response.user.UserDTO;
 import com.side.daangn.service.service.product.ProductService;
 import com.side.daangn.service.service.user.UserService;
 import com.side.daangn.util.ApiResponse;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,24 +38,27 @@ public class UserController {
 
 
     @GetMapping("/logout")
+    @Operation(summary = "유저 로그아웃", description = "유저 로그아웃 API")
     public ResponseEntity<ApiResponse<String>> login() {
         return ApiResponse.success(userService.logout()).toResponseEntity();
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "유저 상세 정보", description = "유저 상세 정보 API")
     public ResponseEntity<ApiResponse<UserDTO>> userDetail(@PathVariable UUID id) {
         return ApiResponse.success(userService.findById(id)).toResponseEntity();
     }
 
     @GetMapping("/{id}/products")
+    @Operation(summary = "유저 상품 목록", description = "유저 상품 목록 API")
     public ResponseEntity<ApiResponse<SearchPageDTO>>userProductList(@PathVariable UUID id, @RequestParam(required = false) Integer pageNum, @RequestParam(required = false) Integer pageSize){
         return ApiResponse.success(productService.userProductList(id, pageNum, pageSize)).toResponseEntity();
     }
 
-    @GetMapping("/kakao/logout")
-    public void kakaoLogoutPage(HttpServletResponse response) throws IOException {
-        response.sendRedirect("https://kauth.kakao.com/oauth/logout?client_id=c12186ef50b138fbb2a9f7ec238d05af&logout_redirect_uri=http://localhost:8080/users/kakao/logout/callback");
-        //return "redirect:/https://kauth.kakao.com/oauth/authorize?client_id=c12186ef50b138fbb2a9f7ec238d05af&redirect_uri=http://localhost:8080/auth/kakao/callback&response_type=code";
-    }
+//    @GetMapping("/kakao/logout")
+//    public void kakaoLogoutPage(HttpServletResponse response) throws IOException {
+//        response.sendRedirect("https://kauth.kakao.com/oauth/logout?client_id=c12186ef50b138fbb2a9f7ec238d05af&logout_redirect_uri=http://localhost:8080/users/kakao/logout/callback");
+//        //return "redirect:/https://kauth.kakao.com/oauth/authorize?client_id=c12186ef50b138fbb2a9f7ec238d05af&redirect_uri=http://localhost:8080/auth/kakao/callback&response_type=code";
+//    }
 
 }

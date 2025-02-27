@@ -3,6 +3,7 @@ package com.side.daangn.controller;
 import com.side.daangn.S3.S3Service;
 import com.side.daangn.service.service.product.ProductService;
 import com.side.daangn.util.ApiResponse;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -34,6 +35,7 @@ public class ImageController {
 
 
     @GetMapping("/product/{filename}")
+    @Operation(summary = "상품 이미지", description = "상품 이미지 API")
     public ResponseEntity<byte[]> getProductImg(@PathVariable("filename")String fileName){
         return ResponseEntity.ok()
                 .contentType(MediaType.IMAGE_JPEG)
@@ -41,6 +43,7 @@ public class ImageController {
     }
 
     @PostMapping("/product")
+    @Operation(summary = "상품 이미지 업로드", description = "다중 상품 이미지 업로드 API")
     public ResponseEntity<ApiResponse<List<String>>> productImgUpload(
             @RequestPart(value = "file", required = false) List<MultipartFile> files
             ){
@@ -48,6 +51,7 @@ public class ImageController {
     }
 
     @GetMapping("/user/{filename}")
+    @Operation(summary = "유저 이미지", description = "유저 이미지 API")
     public ResponseEntity<byte[]> getUserImg(@PathVariable("filename")String fileName){
         return ResponseEntity.ok()
                 .contentType(MediaType.IMAGE_JPEG)
