@@ -4,6 +4,7 @@ import com.side.daangn.dto.response.product.SearchDTO;
 import com.side.daangn.dto.response.user.CategoryDTO;
 import com.side.daangn.service.service.product.SearchService;
 import com.side.daangn.util.ApiResponse;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ public class SearchController {
 
 
     @GetMapping("/hottest")
+    @Operation(summary = "인기 검색어 목록", description = "인기 검색어 목록 API")
     public ResponseEntity<ApiResponse<List<SearchDTO>>> categoryList(@RequestParam(required = false, defaultValue = "0") String type){
         return ApiResponse.success(searchService.hottest(type)).toResponseEntity();
     }

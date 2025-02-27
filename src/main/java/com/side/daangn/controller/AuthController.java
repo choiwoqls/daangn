@@ -10,6 +10,7 @@ import com.side.daangn.service.service.user.AuthService;
 import com.side.daangn.service.service.user.UserService;
 import com.side.daangn.util.ApiResponse;
 import com.side.daangn.util.JWTAuthenticationResponse;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
@@ -49,12 +50,14 @@ public class AuthController {
     private final MailService mailService;
 
     @PostMapping("/login")
+    @Operation(summary = "유저 로그인", description = "유저 로그인 API")
     public ResponseEntity<ApiResponse<JWTAuthenticationResponse>> login(@RequestBody @Valid LoginDTO LoginDTO) {
         return ApiResponse.success(authService.login(LoginDTO)).toResponseEntity();
     }
 
 
     @PostMapping("/sign-up")
+    @Operation(summary = "유저 회원가입", description = "유저 회원가입 API")
     public ResponseEntity<ApiResponse<String>> signUp(
             @RequestPart("sign-up") @Valid SignUpDTO signUpDto,
             @RequestPart(value = "file", required = false) MultipartFile file
@@ -63,6 +66,7 @@ public class AuthController {
     }
 
     @GetMapping("/verify-email")
+    @Operation(summary = "이메일 인증 코드 전송", description = "유저 회원가입 전 이메일 인증 코드 전송 API")
     @ResponseBody
     public ResponseEntity<ApiResponse<TimeLimitDTO>> verifyEmail(@RequestParam @Pattern(regexp = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$", message = "올바른 이메일 형식으로 입력해 주세요.") String email){
         TimeLimitDTO limit = authService.sendMailAuth(email);
@@ -70,6 +74,7 @@ public class AuthController {
     }
 
     @GetMapping("/verify-code")
+    @Operation(summary = "인증 코드 확인", description = "이메일 인증 코드 확인 API")
     public ResponseEntity<ApiResponse<String>> verifyCode(@ModelAttribute @Valid CodeVerifyDTO dto){
         return ApiResponse.success(authService.checkCode(dto.getEmail(), dto.getCode())).toResponseEntity();
     }

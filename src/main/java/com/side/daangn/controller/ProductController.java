@@ -9,6 +9,7 @@ import com.side.daangn.dto.response.user.SearchPageDTO;
 import com.side.daangn.entitiy.product.Product;
 import com.side.daangn.service.service.product.ProductService;
 import com.side.daangn.util.ApiResponse;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -48,11 +49,13 @@ public class ProductController {
 
 
     @GetMapping
+    @Operation(summary = "상품 검색", description = "상품 검색 API")
     public ResponseEntity<ApiResponse<SearchPageDTO>> products_search(@ModelAttribute @Valid SearchOptionDTO dto){
         return ApiResponse.success(productService.products_search(dto)).toResponseEntity();
     }
 
     @GetMapping("/{product_id}")
+    @Operation(summary = "상품 상세 정보", description = "상품 상세 정보 API")
     public ResponseEntity<ApiResponse<ProductDetailDTO>> products_detail(@PathVariable UUID product_id){
         System.out.println("product_id :" + product_id);
         return ApiResponse.success(productService.productDetail(product_id)).toResponseEntity();
@@ -60,6 +63,7 @@ public class ProductController {
 
 
     @PostMapping
+    @Operation(summary = "상품 추가", description = "상품 추가 API")
     public ResponseEntity<ApiResponse<ProductDTO>> addProduct(
             @RequestBody @Valid ProductDTO product
             ){
