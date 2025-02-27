@@ -59,10 +59,9 @@ public class AuthController {
     @PostMapping("/sign-up")
     @Operation(summary = "유저 회원가입", description = "유저 회원가입 API")
     public ResponseEntity<ApiResponse<String>> signUp(
-            @RequestPart("sign-up") @Valid SignUpDTO signUpDto,
-            @RequestPart(value = "file", required = false) MultipartFile file
+            @RequestBody @Valid SignUpDTO signUpDto
             ) {
-        return ApiResponse.success(userService.signUp(signUpDto, file)).toResponseEntity();
+        return ApiResponse.success(userService.signUp(signUpDto)).toResponseEntity();
     }
 
     @GetMapping("/verify-email")

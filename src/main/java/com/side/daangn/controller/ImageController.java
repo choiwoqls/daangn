@@ -2,6 +2,7 @@ package com.side.daangn.controller;
 
 import com.side.daangn.S3.S3Service;
 import com.side.daangn.service.service.product.ProductService;
+import com.side.daangn.service.service.user.UserService;
 import com.side.daangn.util.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,9 @@ public class ImageController {
     @Autowired
     private final ProductService productService;
 
+    @Autowired
+    private final UserService userService;
+
 
     @GetMapping("/product/{filename}")
     @Operation(summary = "상품 이미지", description = "상품 이미지 API")
@@ -56,6 +60,14 @@ public class ImageController {
         return ResponseEntity.ok()
                 .contentType(MediaType.IMAGE_JPEG)
                 .body(s3Service.getImage(fileName));
+    }
+
+    @PostMapping("/user")
+    @Operation(summary = "유저 이미지 업로드", description = "유저 이미지 업로드 API")
+    public ResponseEntity<ApiResponse<String>> userImgUpload(
+            @RequestPart(value = "file", required = false) MultipartFile file
+            ){
+        return ApiResponse.success(userService.uploadUserImg(file)).toResponseEntity();
     }
 
 

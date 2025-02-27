@@ -23,6 +23,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -115,10 +117,19 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
+    public String uploadUserImg(MultipartFile file) {
+        try {
+            return s3Service.uploadImage(file, UUID.randomUUID());
+        }catch (Exception e){
+            throw new RuntimeException("user 파일 업로드");
+        }
+    }
+
 
     @Transactional
     @Override
-    public String signUp(SignUpDTO dto, MultipartFile file) {
+    public String signUp(SignUpDTO dto) {
         double temp = 36.5;
         UUID img_id = UUID.randomUUID();
         try {
@@ -132,22 +143,12 @@ public class UserServiceImpl implements UserService {
             redisUtil.matchedToken(dto.getEmail(), dto.getCode());
             redisUtil.deleteToken(dto.getEmail());
 
-
-            String image = "8983cc4d-f7c2-4471-967c-387dd9ac5967.png";
-
-
-            if(!file.isEmpty()){
-                image = s3Service.uploadImage(file, img_id);
-            }
-
-
-
             User user = new User();
             user.setName(dto.getName());
             user.setEmail(dto.getEmail());
             user.setPassword(HashUtil.hashPassword(dto.getPassword()));
             user.setTemp(temp);
-            user.setImage(image);
+            user.setImage(dto.getImg());
             userRepository.save(user);
             return "회원 가입 성공";
 
