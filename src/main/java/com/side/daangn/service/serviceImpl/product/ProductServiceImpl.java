@@ -162,6 +162,8 @@ public class ProductServiceImpl implements ProductService {
 
             product.setImage(productDto.getImgList().get(0));
 
+	    product.setOnly_on_sale(productDto.getOnly_on_sale());
+
             product = productRepository.save(product);
 
 
