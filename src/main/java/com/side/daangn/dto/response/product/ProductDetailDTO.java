@@ -16,6 +16,8 @@ import java.util.UUID;
 @NoArgsConstructor
 public class ProductDetailDTO {
 
+    private UUID id;
+
     private String title;
     private String body;
     private int price;
@@ -34,6 +36,7 @@ public class ProductDetailDTO {
     private List<String> product_images;
 
     public ProductDetailDTO(Product product){
+        this.id = product.getId();
         this.title = product.getTitle();
         this.body = product.getBody();
         this.price = product.getPrice();

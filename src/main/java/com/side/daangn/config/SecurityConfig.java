@@ -52,14 +52,15 @@ public class SecurityConfig {
             "/auth/**",
             "/swagger-ui/**",
             "/v3/api-docs/**",
-            "/image/**",
             "/login/**"
     };
     private static final String[] LIST_WHITELIST = {
             "/products/**",
             "/categories/**",
             "/hottest/**",
-            "/users/{id}/**"
+            "/users/{id}/**",
+            "/image/**",
+            "/community/**"
     };
 
     //Spring Security에서 인증 오류가 발생할 때 사용자에게 JSON 형식의 에러 응답을 반환
