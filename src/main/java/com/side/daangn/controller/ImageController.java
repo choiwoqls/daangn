@@ -3,6 +3,7 @@ package com.side.daangn.controller;
 import com.side.daangn.S3.S3Service;
 import com.side.daangn.service.service.product.ProductService;
 import com.side.daangn.service.service.user.UserService;
+import com.side.daangn.service.service.util.ImageService;
 import com.side.daangn.util.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,9 @@ public class ImageController {
     @Autowired
     private final UserService userService;
 
+    @Autowired
+    private final ImageService imageService;
+
 
     @GetMapping("/product/{filename}")
     @Operation(summary = "상품 이미지", description = "상품 이미지 API")
@@ -51,7 +55,7 @@ public class ImageController {
     public ResponseEntity<ApiResponse<List<String>>> productImgUpload(
             @RequestPart(value = "file", required = false) List<MultipartFile> files
             ){
-        return ApiResponse.success(productService.uploadProductImg(files)).toResponseEntity();
+        return ApiResponse.success(imageService.uploadImageList(files)).toResponseEntity();
     }
 
     @GetMapping("/user/{filename}")
@@ -67,9 +71,24 @@ public class ImageController {
     public ResponseEntity<ApiResponse<String>> userImgUpload(
             @RequestPart(value = "file", required = false) MultipartFile file
             ){
-        return ApiResponse.success(userService.uploadUserImg(file)).toResponseEntity();
+        return ApiResponse.success(imageService.uploadImage(file)).toResponseEntity();
     }
 
+    @PostMapping("/community")
+    @Operation(summary = "동네생활 이미지 업로드", description = "동네생활 다중 이미지 업로드 API")
+    public ResponseEntity<ApiResponse<List<String>>> communityImgUpload(
+            @RequestPart(value = "file", required = false) List<MultipartFile> files
+            ){
+        return ApiResponse.success(imageService.uploadImageList(files)).toResponseEntity();
+    }
+
+    @GetMapping("/community/{filename}")
+    @Operation(summary = "동네생활 이미지", description = "동네생활 이미지 API")
+    public ResponseEntity<byte[]> getCommunityImg(@PathVariable("filename")String fileName){
+        return ResponseEntity.ok()
+                .contentType(MediaType.IMAGE_JPEG)
+                .body(s3Service.getImage(fileName));
+    }
 
 
 
