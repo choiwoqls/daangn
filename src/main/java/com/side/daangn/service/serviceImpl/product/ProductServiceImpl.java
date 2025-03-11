@@ -5,11 +5,10 @@ import com.side.daangn.dto.request.ProductDTO;
 import com.side.daangn.dto.request.SearchOptionDTO;
 import com.side.daangn.dto.response.product.ProductDetailDTO;
 import com.side.daangn.dto.response.product.ProductResponseDTO;
-import com.side.daangn.dto.response.user.SearchPageDTO;
+import com.side.daangn.dto.response.user.ContentPageDTO;
 import com.side.daangn.entitiy.product.Category;
 import com.side.daangn.entitiy.product.Product;
 import com.side.daangn.entitiy.product.Product_Image;
-import com.side.daangn.entitiy.product.Search;
 import com.side.daangn.entitiy.user.User;
 import com.side.daangn.exception.NotFoundException;
 import com.side.daangn.repository.product.ProductRepository;
@@ -22,8 +21,6 @@ import com.side.daangn.service.service.user.UserService;
 import com.side.daangn.util.RedisUtil;
 import com.side.daangn.util.UserUtils;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.BadRequestException;
-import org.aspectj.weaver.ast.Not;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -33,10 +30,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -64,7 +59,7 @@ public class ProductServiceImpl implements ProductService {
     private final S3Service s3Service;
 
     @Override
-    public SearchPageDTO products_search(SearchOptionDTO dto) {
+    public ContentPageDTO products_search(SearchOptionDTO dto) {
         try {
             int page = dto.getPage() == null || dto.getPage()<=0 ? 0 : dto.getPage()-1;
             int size = dto.getPageSize() == null || dto.getPageSize()<=0 ? 10 : dto.getPageSize();
@@ -107,14 +102,14 @@ public class ProductServiceImpl implements ProductService {
             Page<ProductResponseDTO> products = productRepository.productList(pageable, dto.getSearch(), category_id, only_on_sale, min, max);
 
             int maxPage = products.getTotalPages();
-            return new SearchPageDTO(page,size,maxPage, products.getContent());
+            return new ContentPageDTO(page,size,maxPage, products.getContent());
         }catch (Exception e){
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public SearchPageDTO userProductList(UUID user_id, Integer pageNum, Integer pageSize) {
+    public ContentPageDTO userProductList(UUID user_id, Integer pageNum, Integer pageSize) {
         try{
             if(!userService.existsById(user_id)){
                 throw new NotFoundException("찾을 수 없는 유저");
@@ -126,7 +121,7 @@ public class ProductServiceImpl implements ProductService {
             Page<ProductResponseDTO> products = productRepository.userProductList(pageable, user_id);
             int maxPage = products.getTotalPages();
 
-            return new SearchPageDTO(page,size,maxPage, products.getContent());
+            return new ContentPageDTO(page,size,maxPage, products.getContent());
         }catch (NotFoundException e){
             throw new NotFoundException(e.getMessage());
         }catch (Exception e){
@@ -138,7 +133,6 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public ProductDTO addProduct(ProductDTO productDto) {
         try{
-            UUID product_id = UUID.randomUUID();
             if(!categoryService.existsById(productDto.getCategory_id())){
                 throw new NotFoundException("잘못된 카테고리 선택");
             }
@@ -161,6 +155,8 @@ public class ProductServiceImpl implements ProductService {
             product.setPrice(productDto.getPrice());
 
             product.setImage(productDto.getImgList().get(0));
+
+            product.setOnly_on_sale(productDto.getOnly_on_sale());
 
             product = productRepository.save(product);
 
@@ -197,22 +193,4 @@ public class ProductServiceImpl implements ProductService {
 
     }
 
-    @Override
-    public List<String> uploadProductImg(List<MultipartFile> files) {
-        try {
-            if(files.isEmpty()){
-                throw new IllegalArgumentException("1개 이상의 상품 사진을 등록해 주세요.");
-            }
-            List<String> imgList = new ArrayList<>();
-            for(MultipartFile file : files){
-                String fileName = s3Service.uploadImage(file, UUID.randomUUID());
-                imgList.add(fileName);
-            }
-            return imgList;
-        }catch (IllegalArgumentException e){
-            throw new IllegalArgumentException(e.getMessage());
-        }catch (Exception e){
-            throw new RuntimeException("product 파일 업로드");
-        }
-    }
 }
