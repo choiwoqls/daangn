@@ -2,7 +2,6 @@ package com.side.daangn.service.serviceImpl.user;
 
 import com.side.daangn.S3.S3Service;
 import com.side.daangn.dto.request.auth.SignUpDTO;
-import com.side.daangn.dto.response.user.SearchPageDTO;
 import com.side.daangn.dto.response.user.UserDTO;
 import com.side.daangn.entitiy.user.User;
 import com.side.daangn.exception.DuplicateException;
@@ -11,7 +10,6 @@ import com.side.daangn.exception.UnauthorizedException;
 import com.side.daangn.repository.user.UserRepository;
 import com.side.daangn.security.JwtTokenProvider;
 import com.side.daangn.security.UserPrincipal;
-import com.side.daangn.service.service.product.ProductService;
 import com.side.daangn.service.service.user.UserService;
 import com.side.daangn.util.HashUtil;
 import com.side.daangn.util.RedisUtil;
@@ -23,8 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -117,14 +113,6 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    @Override
-    public String uploadUserImg(MultipartFile file) {
-        try {
-            return s3Service.uploadImage(file, UUID.randomUUID());
-        }catch (Exception e){
-            throw new RuntimeException("user 파일 업로드");
-        }
-    }
 
 
     @Transactional

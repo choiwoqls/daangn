@@ -1,7 +1,6 @@
 package com.side.daangn.service.service.user;
 
 import com.side.daangn.dto.request.auth.SignUpDTO;
-import com.side.daangn.dto.response.user.SearchPageDTO;
 import com.side.daangn.dto.response.user.UserDTO;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,8 +21,6 @@ public interface UserService {
     boolean existsByName(String name);
 
     String logout();
-
-    String uploadUserImg(MultipartFile file);
 
 
 }
